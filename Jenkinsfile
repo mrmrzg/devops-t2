@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'install the npm packages s'
+                echo 'install the npm packages'
                 sh 'npm i'
             }
         }
