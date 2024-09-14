@@ -1,1 +1,26 @@
-pipeline {\r\n    agent any\r\n\r\n    stages {\r\n        stage('Build') {\r\n            steps {\r\n                echo 'install the npm packages'\r\n                sh 'npm i'\r\n            }\r\n        }\r\n\r\n        stage('Unit Tests') {\r\n            steps {\r\n                echo 'run the unit tests'\r\n                sh 'npm run test:unit'\r\n            }\r\n        }\r\n\r\n        stage('Integration Tests') {\r\n            steps {\r\n                echo 'run the integration tests'\r\n                sh 'npm run test:integration'\r\n            }\r\n        }\r\n    }\r\n}
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'install the npm packages'
+                sh 'npm i'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                echo 'run the unit tests'
+                sh 'npm run test:unit'
+            }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                echo 'run the integration tests'
+                sh 'npm run test:integration'
+            }
+        }
+    }
+}
