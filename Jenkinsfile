@@ -1,12 +1,1 @@
-pipeline {
-    agent any
-
-    stages {
-        stage('Build') {
-            steps {
-                echo 'install the packages'
-            }
-        }
-    }
-}
- 
+pipeline {\n    agent any\n\n    stages {\n        stage('Build') {\n            steps {\n                echo 'install the packages'\n            }\n        }\n    }\n}\n 
