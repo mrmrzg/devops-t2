@@ -1,5 +1,5 @@
 pipeline {
-    agent { node 'xyz' }
+    agent any
     parameters {
         string(
             name: 'email', 
