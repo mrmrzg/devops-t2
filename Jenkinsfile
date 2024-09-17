@@ -11,7 +11,6 @@ pipeline {
                 { 
                   steps {
                     echo "This is the test stage for Testing Jenkins Job notification"
-                    exit 1
                     }
                   }
           }
