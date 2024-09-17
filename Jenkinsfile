@@ -3,7 +3,7 @@ pipeline {
     parameters {
         string(
             name: 'email', 
-            defaultValue: 'muhabbenhirt@gmail.com', 
+            defaultValue: 'test@gmail.com', 
             description: 'Email address to send notification' )
     }
     stages{
