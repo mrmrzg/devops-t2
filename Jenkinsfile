@@ -3,38 +3,18 @@ pipeline {
     parameters {
         string(
             name: 'email', 
-            defaultValue: 'muhabenhirt@gmail.com', 
+            defaultValue: 'muhabbenhirt@gmail.com', 
             description: 'Email address to send notification' )
     }
-    stages {
-        stage('Build') {
-            steps {
-                echo 'install the npm packages ss'
-                sh 'npm i'
-            }
-        }
-
-        stage('Unit Tests') {
-            steps {
-                echo 'run the unit tests'
-                sh 'npm run test:unit'
-            }
-        }
-
-        stage('Integration Tests') {
-            steps {
-                echo 'run the integration tests'
-                sh 'npm run test:integration'
-            }
-        }
-
-        stage('Debloy') {
-            steps {
-                echo 'deploy'
-                sh ''
-            }
-        }
-    }
+    stages{
+          stage("Test-Stage")
+                { 
+                  steps {
+                    echo "This is the test stage for Testing Jenkins Job notification"
+                    exit 1
+                    }
+                  }
+          }
 
     post {
             failure {
@@ -52,6 +32,6 @@ pipeline {
                     to: "$email",
                     body: "${JOB_NAME}.${BUILD_NUMBER} PASSED"
                 )
-            }
-    }
+            }
+    }
 }
