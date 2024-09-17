@@ -19,40 +19,54 @@ pipeline {
     post {
         always {
             script {
-                def buildStatus = currentBuild.currentResult
-                def subject = "${JOB_NAME} - Build #${BUILD_NUMBER} - ${buildStatus}"
-                def details = """
-                    <h2>Build ${buildStatus}!</h2>
-                    <p><b>Project:</b> ${JOB_NAME}</p>
-                    <p><b>Build Number:</b> ${BUILD_NUMBER}</p>
-                    <p><b>Status:</b> ${buildStatus}</p>
-                    <p><b>Started by:</b> ${currentBuild.getBuildCauses()[0]?.shortDescription}</p>
-                    <p><b>Duration:</b> ${currentBuild.durationString}</p>
-                    <p><b>Build URL:</b> <a href="${BUILD_URL}">${BUILD_URL}</a></p>
-                    <p><b>Console Output:</b> <a href="${BUILD_URL}console">${BUILD_URL}console</a></p>
-                """
-
-                // Include changes if any
-                def changeLog = ""
-                for (change in currentBuild.changeSets) {
-                    for (entry in change.items) {
-                        changeLog += "<li>${entry.msg} by ${entry.author}</li>"
+                try {
+                    def buildStatus = currentBuild.currentResult
+                    def subject = "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${buildStatus}"
+                    def startedBy = ''
+                    def cause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
+                    if (cause != null) {
+                        startedBy = cause.getUserName()
+                    } else {
+                        startedBy = 'Unknown'
                     }
-                }
-                if (changeLog) {
-                    details += "<p><b>Changes:</b></p><ul>${changeLog}</ul>"
-                } else {
-                    details += "<p>No changes.</p>"
-                }
+                    def duration = currentBuild.durationString ?: 'N/A'
+                    def details = """
+                        <h2>Build ${buildStatus}!</h2>
+                        <p><b>Project:</b> ${env.JOB_NAME}</p>
+                        <p><b>Build Number:</b> ${env.BUILD_NUMBER}</p>
+                        <p><b>Status:</b> ${buildStatus}</p>
+                        <p><b>Started by:</b> ${startedBy}</p>
+                        <p><b>Duration:</b> ${duration}</p>
+                        <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                        <p><b>Console Output:</b> <a href="${env.BUILD_URL}console">${env.BUILD_URL}console</a></p>
+                    """
 
-                // Send the email
-                emailext(
-                    to: "${params.email}",
-                    subject: subject,
-                    body: details,
-                    mimeType: 'text/html',
-                    attachLog: true
-                )
+                    // Include changes if any
+                    def changeLog = ""
+                    def hasChanges = false
+                    for (changeSet in currentBuild.changeSets) {
+                        for (entry in changeSet.items) {
+                            hasChanges = true
+                            changeLog += "<li>${entry.msg} by ${entry.author}</li>"
+                        }
+                    }
+                    if (hasChanges) {
+                        details += "<p><b>Changes:</b></p><ul>${changeLog}</ul>"
+                    } else {
+                        details += "<p>No changes.</p>"
+                    }
+
+                    // Send the email
+                    emailext(
+                        to: "${params.email}",
+                        subject: subject,
+                        body: details,
+                        mimeType: 'text/html',
+                        attachLog: true
+                    )
+                } catch (Exception e) {
+                    echo "Failed to send email: ${e.getMessage()}"
+                }
             }
         }
     }
