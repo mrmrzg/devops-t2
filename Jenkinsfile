@@ -3,7 +3,7 @@ pipeline {
     parameters {
         string(
             name: 'email', 
-            defaultValue: 'test@gmail.com', 
+            defaultValue: 'muhabbenhirt@gmail.com', 
             description: 'Email address to send notification' )
     }
     stages{
@@ -16,32 +16,18 @@ pipeline {
 
     post {
         failure {
-            script {
-                try {
-                    emailext(
-                        subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
-                        mimeType: 'text/html',
-                        to: "${params.email}",
-                        body: "${JOB_NAME}.${BUILD_NUMBER} FAILED"
-                    )
-                } catch (Exception e) {
-                    echo "Failed to send email: ${e.message}"
-                }
-            }
+            mail(
+                to: "${params.email}",
+                subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
+                body: "${JOB_NAME}.${BUILD_NUMBER} FAILED"
+            )
         }
         success {
-            script {
-                try {
-                    emailext(
-                        subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
-                        mimeType: 'text/html',
-                        to: "${params.email}",
-                        body: "${JOB_NAME}.${BUILD_NUMBER} PASSED"
-                    )
-                } catch (Exception e) {
-                    echo "Failed to send email: ${e.message}"
-                }
-            }
+            mail(
+                to: "${params.email}",
+                subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
+                body: "${JOB_NAME}.${BUILD_NUMBER} PASSED"
+            )
         }
     }
 }
