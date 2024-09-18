@@ -1,7 +1,12 @@
 pipeline {
     agent any
-
-    stages {
+    parameters {
+        string(
+            name: 'email', 
+            defaultValue: 'test@gmail.com', 
+            description: 'Email address to send notification' )
+    }
+      stages {
         stage('Build') {
             steps {
                 echo 'install the npm packages'
@@ -21,6 +26,23 @@ pipeline {
                 echo 'run the integration tests'
                 sh 'npm run test:integration'
             }
+        }
+    }
+
+    post {
+        failure {
+            mail(
+                to: "${params.email}",
+                subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
+                body: "${JOB_NAME}.${BUILD_NUMBER} FAILED"
+            )
+        }
+        success {
+            mail(
+                to: "${params.email}",
+                subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
+                body: "${JOB_NAME}.${BUILD_NUMBER} PASSED"
+            )
         }
     }
 }
