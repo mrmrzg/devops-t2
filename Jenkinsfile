@@ -1,33 +1,26 @@
 pipeline {
     agent any
-    parameters {
-        string(
-            name: 'email', 
-            defaultValue: 'test@gmail.com', 
-            description: 'Email address to send notification' )
-    }
-    stages{
-        stage("Test-Stage") { 
+
+    stages {
+        stage('Build') {
             steps {
-                echo "This is the test stage for Testing Jenkins Job notification"
+                echo 'install the npm packages'
+                sh 'npm i'
             }
         }
-    }
 
-    post {
-        failure {
-            mail(
-                to: "${params.email}",
-                subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
-                body: "${JOB_NAME}.${BUILD_NUMBER} FAILED"
-            )
+        stage('Unit Tests') {
+            steps {
+                echo 'run the unit tests'
+                sh 'npm run test:unit'
+            }
         }
-        success {
-            mail(
-                to: "${params.email}",
-                subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
-                body: "${JOB_NAME}.${BUILD_NUMBER} PASSED"
-            )
+
+        stage('Integration Tests') {
+            steps {
+                echo 'run the integration tests'
+                sh 'npm run test:integration'
+            }
         }
     }
 }
